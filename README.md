@@ -1,124 +1,47 @@
-# finapi — API Flask avec persistance SQLite
-
-Lab 2 — Coaching M1/M2 Finance Quantitative | EPT  
-Étudiant : Wadii Selmane | Enseignant : Mr. Ahmed Ben Taleb
-
+---
+title: FinSentiment
+emoji: 📈
+colorFrom: blue
+colorTo: yellow
+sdk: streamlit
+sdk_version: "1.35.0"
+python_version: "3.10"
+app_file: app.py
+pinned: false
+license: mit
 ---
 
-## Prérequis
+# FinSentiment
 
-- Python ≥ 3.10
-- Git
+![CI](https://github.com/wadiiselman/-finapi-finsentiment/actions/workflows/ci.yml/badge.svg)
 
----
+A financial sentiment analysis tool that fetches stock prices and news, runs them through FinBERT, and displays the results in an interactive dashboard.
+
+## What it does
+
+- Pulls historical prices and news articles for any stock ticker (AAPL, MSFT, GOOGL...)
+- Classifies each news headline as **positive**, **neutral**, or **negative** using [FinBERT](https://huggingface.co/ProsusAI/finbert)
+- Displays prices, sentiment distribution, and colored news feed in a Streamlit dashboard
 
 ## Installation
 
 ```bash
-cd projets/finapi
+git clone https://github.com/wadiiselman/-finapi-finsentiment.git
+cd finapi-finsentiment
 python -m venv .venv
-source .venv/Scripts/activate      # Git Bash (Windows)
-# source .venv/bin/activate        # macOS / Linux
-# .venv\Scripts\Activate.ps1       # PowerShell
+source .venv/Scripts/activate
 pip install -r requirements.txt
 ```
 
----
-
-## Lancer l'ETL (ingestion des données)
+## Quickstart
 
 ```bash
-PYTHONPATH=. python scripts/run_etl.py AAPL MSFT GOOGL
+python project_scripts/run_etl.py AAPL MSFT GOOGL
+python project_scripts/enrich_sentiment.py
+python -m finapi.app        # terminal 1
+streamlit run dashboard/app.py  # terminal 2
 ```
 
-Le pipeline récupère les prix et les actualités pour chaque ticker
-et les insère dans `data/finapi.db` (les doublons sont ignorés).
+## Stack
 
----
-
-## Lancer le serveur
-
-```bash
-python -m finapi.app
-```
-
-Le serveur démarre sur `http://127.0.0.1:5000`.
-
----
-
-## Endpoints
-
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| GET | `/health` | Statut du serveur |
-| GET | `/price/<ticker>` | Dernier cours (temps réel via yfinance) |
-| GET | `/history/<ticker>?days=N` | Historique N jours (temps réel) |
-| GET | `/db/prices/<ticker>` | Historique depuis SQLite |
-| GET | `/db/news/<ticker>` | Actualités depuis SQLite |
-
----
-
-## Exemples
-
-```bash
-# Santé du serveur
-curl http://localhost:5000/health
-
-# Cours en temps réel
-curl http://localhost:5000/price/AAPL
-
-# Historique depuis la base
-curl http://localhost:5000/db/prices/AAPL
-
-# Actualités depuis la base
-curl http://localhost:5000/db/news/AAPL
-```
-
----
-
-## Gestion des erreurs
-
-| Code | Cas |
-|------|-----|
-| 400 | Paramètre `days` invalide |
-| 404 | Ticker introuvable |
-| 500 | Erreur interne serveur |
-
----
-
-## Structure du projet
-
-```
-finapi/
-├── .venv/                  (ignoré par Git)
-├── data/
-│   └── finapi.db           (ignoré par Git)
-├── finapi/
-│   ├── __init__.py
-│   ├── app.py              endpoints Flask
-│   ├── db.py               configuration SQLAlchemy
-│   ├── models.py           modèles prices et news
-│   ├── prices.py           accès yfinance (temps réel)
-│   └── etl/
-│       ├── __init__.py
-│       ├── prices_etl.py   ingestion des cours
-│       └── news_etl.py     ingestion des actualités
-├── scripts/
-│   └── run_etl.py          script d'exécution ETL
-├── tests/
-│   └── test_app.py
-├── .gitignore
-├── README.md
-└── requirements.txt
-```
-
----
-
-## Versionnement
-
-```bash
-git log --oneline
-# 2ab7d2d add ETL pipeline for prices and news ingestion
-# 1773ede add db layer (SQLAlchemy setup + models)
-# e1ef7b8 Lab1: API Flask pour cours boursiers
-```
+- Flask · SQLAlchemy · SQLite · yfinance · FinBERT · Streamlit · Plotly
