@@ -28,7 +28,7 @@ def bootstrap_data():
 
         from finapi.etl.news_etl import ingest_news
         from finapi.etl.prices_etl import ingest_prices
-        from scripts.enrich_sentiment import main as enrich
+        from project_scripts.enrich_sentiment import main as enrich
 
         for t in ["AAPL", "MSFT", "GOOGL", "TSLA"]:
             ingest_prices(t, period="1mo")
